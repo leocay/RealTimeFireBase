@@ -4,5 +4,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:FireBaseRealTime"
     StartupUri="MainWindow.xaml">
-    <Application.Resources />
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/FireBaseRealTime;component/Designs/ListViewStyle.xaml" />
+                <ResourceDictionary Source="/FireBaseRealTime;component/Designs/ScrollViewStyle.xaml" />
+                <ResourceDictionary Source="/FireBaseRealTime;component/Designs/TextStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>

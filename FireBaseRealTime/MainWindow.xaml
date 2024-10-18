@@ -10,10 +10,107 @@
     Height="450"
     mc:Ignorable="d">
     <Grid>
-        <Button
-            Width="100"
-            Height="50"
-            Command="{Binding AddDataCommand}"
-            Content="Write" />
+        <ListView
+            x:Name="ListAcc"
+            Grid.Row="0"
+            AllowDrop="True"
+            Background="Beige"
+            DragEnter="ListView_DragEnter"
+            DragOver="ListView_DragOver"
+            Drop="ListView_Drop"
+            ItemsSource="{Binding ListAccountInforModels, Mode=TwoWay}"
+            PreviewMouseLeftButtonDown="ListView_PreviewMouseLeftButtonDown"
+            PreviewMouseMove="ListView_PreviewMouseMove"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            ScrollViewer.VerticalScrollBarVisibility="Visible"
+            SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
+            VirtualizingStackPanel.IsVirtualizing="True"
+            VirtualizingStackPanel.VirtualizationMode="Recycling">
+
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="50">
+                        <GridViewColumn.Header>
+                            <Label Content="No." Style="{DynamicResource TableHeader}" />
+                        </GridViewColumn.Header>
+
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Label Content="{Binding NoId}" Style="{DynamicResource LabelCenter}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="100">
+                        <GridViewColumn.Header>
+                            <Label Content="Name" Style="{DynamicResource TableHeader}" />
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Label Content="{Binding Name, Mode=TwoWay}">
+                                    <Label.Style>
+                                        <Style TargetType="Label">
+                                            <Setter Property="Foreground" Value="Black" />
+                                            <Setter Property="FontWeight" Value="Bold" />
+                                            <Setter Property="FontFamily" Value="Times New Roman" />
+                                            <Setter Property="FontSize" Value="15" />
+
+                                            <Style.Triggers>
+
+                                                <DataTrigger Binding="{Binding IsVisible}" Value="False">
+                                                    <Setter Property="Foreground" Value="Gray" />
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding IsVisible}" Value="True">
+                                                    <Setter Property="Foreground" Value="Black" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Label.Style>
+                                </Label>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="150">
+                        <GridViewColumn.Header>
+                            <Label Content="Map" Style="{DynamicResource TableHeader}" />
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Label Content="{Binding Map, Mode=TwoWay}">
+                                    <Label.Style>
+                                        <Style TargetType="Label">
+                                            <Setter Property="Foreground" Value="Red" />
+                                            <Setter Property="FontFamily" Value="Times New Roman" />
+                                            <Setter Property="FontSize" Value="15" />
+
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Map}" Value="Dungeon">
+                                                    <Setter Property="Foreground" Value="Black" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Label.Style>
+                                </Label>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="50">
+                        <GridViewColumn.Header>
+                            <Label Content="Sub" Style="{DynamicResource TableHeader}" />
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Label Content="{Binding Sever, Mode=TwoWay}" Style="{DynamicResource LabelCenter}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                </GridView>
+            </ListView.View>
+        </ListView>
+
     </Grid>
 </Window>

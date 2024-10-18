@@ -9,8 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
     <PackageReference Include="FirebaseDatabase.net" Version="4.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Converter\" />
+    <Folder Include="ViewModels\" />
   </ItemGroup>
 
 </Project>
