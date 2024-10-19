@@ -10,6 +10,8 @@
                 <ResourceDictionary Source="/FireBaseRealTime;component/Designs/ListViewStyle.xaml" />
                 <ResourceDictionary Source="/FireBaseRealTime;component/Designs/ScrollViewStyle.xaml" />
                 <ResourceDictionary Source="/FireBaseRealTime;component/Designs/TextStyle.xaml" />
+                <ResourceDictionary Source="/FireBaseRealTime;component/Designs/ColorStyle.xaml" />
+                <ResourceDictionary Source="/FireBaseRealTime;component/Designs/ButtonStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

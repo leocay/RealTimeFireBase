@@ -2,6 +2,235 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:sys="clr-namespace:System;assembly=netstandard">
+
+    <Style x:Key="ScrollBarLineButton" TargetType="{x:Type RepeatButton}">
+        <Setter Property="Height" Value="12" />
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource FocusVisualStyle}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    <Border
+                        x:Name="RepeatButtonBorder"
+                        AllowDrop="True"
+                        Background="{DynamicResource RepeatButtonBackgroundColor}"
+                        CornerRadius="2">
+                        <Path
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Data="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
+                            Fill="{DynamicResource RepeatButtonPathFillColor}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="RepeatButtonBorder" Property="Background" Value="{DynamicResource RepeatButtonMouseBackgroundColor}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <ControlTemplate x:Key="FileListVerticalScrollBar" TargetType="{x:Type ScrollBar}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <RepeatButton
+                Grid.Row="0"
+                Command="ScrollBar.LineUpCommand"
+                Content="M 0 4 L 8 4 L 4 0 Z"
+                Style="{StaticResource ScrollBarLineButton}" />
+            <Track
+                x:Name="PART_Track"
+                Grid.Row="1"
+                Width="6"
+                IsDirectionReversed="True">
+                <Track.Resources>
+                    <!--  Thumb's minimum height is half of this metric  -->
+                    <sys:Double x:Key="{x:Static SystemParameters.VerticalScrollBarButtonHeightKey}">
+                        80
+                    </sys:Double>
+                </Track.Resources>
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton
+                        ClickMode="Press"
+                        Command="ScrollBar.PageUpCommand"
+                        Style="{DynamicResource ScrollBarPageButton}" />
+                </Track.DecreaseRepeatButton>
+                <Track.Thumb>
+                    <Thumb Background="{DynamicResource ThumbBackgroundColor}" Style="{DynamicResource ScrollBarThumb}" />
+                </Track.Thumb>
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton
+                        ClickMode="Press"
+                        Command="ScrollBar.PageDownCommand"
+                        Style="{DynamicResource ScrollBarPageButton}" />
+                </Track.IncreaseRepeatButton>
+            </Track>
+            <RepeatButton
+                Grid.Row="2"
+                Command="ScrollBar.LineDownCommand"
+                Content="M 0 0 L 4 4 L 8 0 Z"
+                Style="{StaticResource ScrollBarLineButton}" />
+        </Grid>
+    </ControlTemplate>
+
+    <Style x:Key="FileListScrollBarStyle" TargetType="{x:Type ScrollBar}">
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="MinHeight" Value="0" />
+                <Setter Property="Height" Value="6" />
+                <Setter Property="Template" Value="{DynamicResource HorizontalScrollBar}" />
+            </Trigger>
+            <Trigger Property="Orientation" Value="Vertical">
+                <Setter Property="MinWidth" Value="0" />
+                <Setter Property="Width" Value="12" />
+                <Setter Property="Template" Value="{StaticResource FileListVerticalScrollBar}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="{x:Static GridView.GridViewScrollViewerStyleKey}" TargetType="ScrollViewer">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                    <Grid Background="{TemplateBinding Background}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <DockPanel Margin="{TemplateBinding Padding}">
+                            <ScrollViewer
+                                DockPanel.Dock="Top"
+                                Focusable="false"
+                                HorizontalScrollBarVisibility="Hidden"
+                                VerticalScrollBarVisibility="Hidden">
+                                <GridViewHeaderRowPresenter
+                                    Margin="2"
+                                    AllowsColumnReorder="{Binding Path=TemplatedParent.View.AllowsColumnReorder, RelativeSource={RelativeSource TemplatedParent}}"
+                                    ColumnHeaderContainerStyle="{Binding Path=TemplatedParent.View.ColumnHeaderContainerStyle, RelativeSource={RelativeSource TemplatedParent}}"
+                                    ColumnHeaderContextMenu="{Binding Path=TemplatedParent.View.ColumnHeaderContextMenu, RelativeSource={RelativeSource TemplatedParent}}"
+                                    ColumnHeaderTemplate="{Binding Path=TemplatedParent.View.ColumnHeaderTemplate, RelativeSource={RelativeSource TemplatedParent}}"
+                                    ColumnHeaderTemplateSelector="{Binding Path=TemplatedParent.View.ColumnHeaderTemplateSelector, RelativeSource={RelativeSource TemplatedParent}}"
+                                    ColumnHeaderToolTip="{Binding Path=TemplatedParent.View.ColumnHeaderToolTip, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Columns="{Binding Path=TemplatedParent.View.Columns, RelativeSource={RelativeSource TemplatedParent}}"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            </ScrollViewer>
+
+                            <ScrollContentPresenter
+                                Name="PART_ScrollContentPresenter"
+                                CanContentScroll="True"
+                                KeyboardNavigation.DirectionalNavigation="Local" />
+                        </DockPanel>
+
+                        <ScrollBar
+                            Name="PART_HorizontalScrollBar"
+                            Grid.Row="1"
+                            Maximum="{TemplateBinding ScrollableWidth}"
+                            Orientation="Horizontal"
+                            Style="{DynamicResource FileListScrollBarStyle}"
+                            ViewportSize="{TemplateBinding ViewportWidth}"
+                            Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+                            Value="{TemplateBinding HorizontalOffset}" />
+
+                        <ScrollBar
+                            Name="PART_VerticalScrollBar"
+                            Grid.Column="1"
+                            Maximum="{TemplateBinding ScrollableHeight}"
+                            Style="{DynamicResource FileListScrollBarStyle}"
+                            ViewportSize="{TemplateBinding ViewportHeight}"
+                            Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                            Value="{TemplateBinding VerticalOffset}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="GridViewColumnHeaderGripper" TargetType="{x:Type Thumb}">
+        <Setter Property="Width" Value="18" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Border Margin="5" Background="Transparent">
+                        <Rectangle
+                            Width="5"
+                            HorizontalAlignment="Center"
+                            Fill="{DynamicResource ColumnHeaderGripperFillColor}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="{x:Type GridViewColumnHeader}" TargetType="{x:Type GridViewColumnHeader}">
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="{DynamicResource ColumnHeaderForegroundColor}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="5" />
+                        </Grid.ColumnDefinitions>
+                        <Border
+                            x:Name="HeaderBorder"
+                            Grid.Column="0"
+                            Height="24"
+                            Background="{DynamicResource HeaderBorderBackgroundColor}"
+                            BorderThickness="0,1"
+                            CornerRadius="5">
+                            <ContentPresenter
+                                x:Name="HeaderContent"
+                                RecognizesAccessKey="True"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Border>
+                        <Thumb
+                            x:Name="PART_HeaderGripper"
+                            Grid.Column="1"
+                            Margin="0,0,-6,0"
+                            HorizontalAlignment="Right"
+                            Style="{StaticResource GridViewColumnHeaderGripper}" />
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=HeaderBorder}" Value="True">
+                            <Setter TargetName="HeaderBorder" Property="Background" Value="{DynamicResource HeaderBorderMouseBackgroundColor}" />
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="Role" Value="Floating">
+                <Setter Property="Opacity" Value="0.7" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="GridViewColumnHeader">
+                            <Canvas Name="PART_FloatingHeaderCanvas">
+                                <Border
+                                    Width="{TemplateBinding ActualWidth}"
+                                    Height="{TemplateBinding ActualHeight}"
+                                    Background="{DynamicResource HeaderBorderFloatingBackgroundColor}"
+                                    CornerRadius="5" />
+                            </Canvas>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="CustomListViewItemStyle" TargetType="ListViewItem">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
@@ -22,4 +251,245 @@
         </Setter>
 
     </Style>
+
+    <Style x:Key="CustomListViewStyle" TargetType="{x:Type ListView}">
+        <Setter Property="View">
+            <Setter.Value>
+                <GridView>
+                    <GridViewColumn Width="240">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <Button
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Command="{Binding}"
+                                    CommandParameter="{Binding}"
+                                    Style="{DynamicResource ListHeaderButtonStyle}">
+                                    <StackPanel Height="16" Orientation="Horizontal">
+                                        <TextBlock Text="Name" />
+                                        <Path
+                                            x:Name="SortArrow"
+                                            Margin="5"
+                                            Data="M 0 6 L 4 2 L 8 6"
+                                            Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" />
+                                    </StackPanel>
+
+                                </Button>
+
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Image
+                                        Grid.Column="0"
+                                        Width="16"
+                                        Margin="0,0,5,0">
+                                        <Image.Style>
+                                            <Style TargetType="{x:Type Image}" />
+                                        </Image.Style>
+                                    </Image>
+
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Text="{Binding Name}"
+                                        TextTrimming="CharacterEllipsis" />
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Width="240">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <Button
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Command="{Binding}"
+                                    CommandParameter="{Binding}"
+                                    Style="{DynamicResource ListHeaderButtonStyle}">
+                                    <StackPanel Height="16" Orientation="Horizontal">
+                                        <TextBlock Text="Map" />
+                                        <Path
+                                            x:Name="SortArrow"
+                                            Margin="5"
+                                            Data="M 0 6 L 4 2 L 8 6"
+                                            Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" />
+                                    </StackPanel>
+
+                                </Button>
+
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Image
+                                        Grid.Column="0"
+                                        Width="16"
+                                        Margin="0,0,5,0">
+                                        <Image.Style>
+                                            <Style TargetType="{x:Type Image}" />
+                                        </Image.Style>
+                                    </Image>
+
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Text="{Binding Map}"
+                                        TextTrimming="CharacterEllipsis" />
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="Auto">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <Button
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Command="{Binding}"
+                                    CommandParameter="{Binding}"
+                                    Style="{DynamicResource ListHeaderButtonStyle}">
+                                    <StackPanel Height="16" Orientation="Horizontal">
+                                        <TextBlock Text="No." />
+                                        <Path
+                                            x:Name="SortArrow"
+                                            Margin="5"
+                                            Data="M 0 6 L 4 2 L 8 6"
+                                            Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" />
+                                    </StackPanel>
+
+                                </Button>
+
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+
+                        <GridViewColumn.CellTemplate >
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Image
+                                        Grid.Column="0"
+                                        Width="16"
+                                        Margin="0,0,5,0">
+                                        <Image.Style>
+                                            <Style TargetType="{x:Type Image}" />
+                                        </Image.Style>
+                                    </Image>
+
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Text="{Binding NoId}"
+                                        TextTrimming="CharacterEllipsis" />
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <Style x:Key="CustomListViewStyleItem" TargetType="ListViewItem">
+        <Setter Property="Margin" Value="2"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ItemBorderBrushColor}"/>
+        <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <!--<EventSetter Event="PreviewMouseDown" Handler="FileListViewItem_MouseDown"/>
+        <EventSetter Event="PreviewMouseMove" Handler="FileListViewItem_PreviewMouseMove"/>
+        <EventSetter Event="GiveFeedback" Handler="FileListViewItem_GiveFeedback"/>
+        <EventSetter Event="Drop" Handler="FileListViewItem_Drop"/>-->
+        <!--<Setter Property="ContextMenuService.IsEnabled" Value="{Binding IsSelected}"/>
+    <Setter Property="ContextMenu">
+        <Setter.Value>
+            <ContextMenu ItemsSource="{Binding ContextMenu}"
+                         UsesItemContainerTemplate="True"
+                         ItemContainerTemplateSelector="{StaticResource MenuItemContainerTemplateSelector}"/>
+        </Setter.Value>
+    </Setter>-->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListViewItem">
+                    <Border x:Name="ButtonBorder"
+                        Height="28"
+                        CornerRadius="5"
+                        AllowDrop="{Binding AllowDrop}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                        <Border.Background>
+                            <SolidColorBrush x:Name="ButtonBorderBackgroundColor"
+                                         Color="{DynamicResource ItemBackgroundColor}"/>
+                        </Border.Background>
+
+                        <!--<Border.ToolTip>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{lg:Loc CenterPanelDataCreatedToolTip.Text}"/>
+                                <TextBlock Text="{Binding CreatedOn}"/>
+                            </StackPanel>
+                        </Border.ToolTip>-->
+
+                        <Border.Triggers>
+                            <EventTrigger RoutedEvent="Border.DragEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonBorderBackgroundColor"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     From="1" To="0"
+                                                     Duration="00:00:00.0"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="Border.DragLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonBorderBackgroundColor"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     From="0" To="1"
+                                                     Duration="00:00:00.0"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+                        <Border.InputBindings>
+                            <MouseBinding MouseAction="LeftDoubleClick"
+                                      Command="{Binding ElementName=FileList, Path=DataContext.OpenFileCommand}"
+                                      CommandParameter="{Binding SelectedItem, ElementName=FileList}"/>
+                        </Border.InputBindings>
+                        <GridViewRowPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="ButtonBorder"
+                                Property="Background"
+                                Value="{DynamicResource ItemSelectedBackgroundColor}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource ItemMouseBorderBrushColor}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
 </ResourceDictionary>
